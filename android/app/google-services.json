@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "677228271448",
+    "project_id": "bossam-e675e",
+    "storage_bucket": "bossam-e675e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:677228271448:android:15c1e84e5f89224d67f72d",
+        "android_client_info": {
+          "package_name": "com.bossam.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "677228271448-d10204n3srsluq550ubbqed92mp9g44v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAV5uq5Gp1iIXObAjk6ErA5i9fij7rIrlQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "677228271448-d10204n3srsluq550ubbqed92mp9g44v.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "677228271448-1um661179mkvtl020sg6gmod22tdtc4t.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.bossam"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
