@@ -71,13 +71,14 @@ class _CalendarWidgetState extends State<CalendarWidget>
               shape: BoxShape.circle,
             ),
             // 오늘 날짜의 스타일을 설정.
-            todayDecoration: const BoxDecoration(
-              color: Color(0xffC3D8F8),
+            todayDecoration: BoxDecoration(
+              color: const Color(0xff9DB2D3).withOpacity(0.47),
               shape: BoxShape.circle,
             ),
+
             // 선택된 날짜의 스타일을 설정.
-            selectedDecoration: const BoxDecoration(
-              color: Color(0xffFFB7B2),
+            selectedDecoration: BoxDecoration(
+              color: const Color(0xff9DB2D3).withOpacity(0.47), // `const` 제거
               shape: BoxShape.circle,
             ),
             // 기본 날짜 텍스트 스타일.

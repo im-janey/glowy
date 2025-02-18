@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'monthly_yearly/report_monthly.dart';
-import 'monthly_yearly/report_yearly.dart';
+import 'monthly_yearly/monthly.dart';
+import 'monthly_yearly/yearly.dart';
 
 class ReportPage extends StatefulWidget {
   const ReportPage({super.key});
@@ -27,13 +27,9 @@ class _ReportPageState extends State<ReportPage> {
           children: [
             _buildSegmentControl(),
             const SizedBox(height: 16),
-            Flexible(
-              child: SingleChildScrollView(
-                child: isMonthly
-                    ? MonthlyReportPage(selectedUnit: selectedMonth)
-                    : YearlyReportPage(selectedUnit: selectedYear),
-              ),
-            ),
+            isMonthly
+                ? MonthlyReportPage(selectedUnit: selectedMonth)
+                : YearlyReportPage(selectedUnit: selectedYear),
           ],
         ),
       ),
