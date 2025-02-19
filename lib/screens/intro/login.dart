@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:bossam/screens/intro/signup2.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +10,7 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import '../../components/navibation_bar.dart';
 import 'emailLogin.dart';
 import 'etc/agreement_bottomsheet.dart';
+import 'signup2.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

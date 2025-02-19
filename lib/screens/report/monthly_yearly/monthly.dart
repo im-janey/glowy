@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import 'widget/button.dart';
 import 'widget/calendar.dart';
+import 'widget/date_selector.dart';
 import 'widget/pie_chart.dart';
 
 class MonthlyReportPage extends StatefulWidget {
@@ -17,11 +17,18 @@ class MonthlyReportPage extends StatefulWidget {
 
 class _MonthlyReportPageState extends State<MonthlyReportPage> {
   List<Map<String, dynamic>> pieData = [];
+  int selectedMonth = DateTime.now().month;
 
   @override
   void initState() {
     super.initState();
     fetchPieData();
+  }
+
+  void updateSelectedMonth(String month) {
+    setState(() {
+      selectedMonth = int.parse(month);
+    });
   }
 
   Future<void> fetchPieData() async {
@@ -68,7 +75,7 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
           .get();
 
       if (!doc.exists) {
-        return Colors.grey; // 기본 색상
+        return Colors.grey;
       }
 
       final data = doc.data() as Map<String, dynamic>;
@@ -95,75 +102,79 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const DropdownWidget(),
-            const SizedBox(height: 16),
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          MonthlyDropdown(onMonthChanged: updateSelectedMonth),
 
-            /// 파이 차트 위젯
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 5,
-                    spreadRadius: 2,
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  MonthlyPieChart(pieData: pieData),
-                  MonthlyLegend(pieData: pieData),
-                  const SizedBox(width: 20),
-                ],
-              ),
-            ),
-            const SizedBox(height: 40),
+          const SizedBox(height: 16),
 
-            /// 일별 기록 (캘린더)
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 5,
-                    spreadRadius: 2,
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "일별 기록",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  CalendarWidget(
-                    onDaySelected: (DateTime date) {},
-                    initialFocusedDay: DateTime.now(),
-                  ),
-                ],
-              ),
+          /// 파이 차트 위젯
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 5,
+                  spreadRadius: 2,
+                ),
+              ],
             ),
-          ],
-        ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                MonthlyPieChart(pieData: pieData),
+                MonthlyLegend(pieData: pieData),
+                const SizedBox(width: 20),
+              ],
+            ),
+          ),
+          const SizedBox(height: 30),
+
+          /// 일별 기록 (캘린더)
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 5,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CalendarWidget(
+                  onDaySelected: (DateTime date) {
+                    debugPrint('Selected Date: $date'); // 선택된 날짜 출력
+                  },
+                  initialFocusedDay: DateTime.now(),
+                  onDaysSelected: (Set<DateTime> selectedDates) {
+                    debugPrint('Selected Dates: $selectedDates');
+                  },
+                  initiallySelectedDays: {
+                    DateTime(DateTime.now().year, 2, 3), // 2월 3일
+                    DateTime(DateTime.now().year, 2, 7), // 2월 7일
+                  },
+                  enabledDayPredicate: (DateTime day) {
+                    return {
+                      DateTime(DateTime.now().year, 2, 3),
+                      DateTime(DateTime.now().year, 2, 7),
+                    }.contains(DateTime(day.year, day.month, day.day));
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

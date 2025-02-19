@@ -1,13 +1,17 @@
-platform :ios, '14.0' # 플랫폼 버전은 13.0 이상으로 유지
+# 전역 iOS 플랫폼 버전 설정
+platform :ios, '14.0'
 
+# CocoaPods 통계 전송 비활성화 (빌드 지연 완화 목적)
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
+# Runner 프로젝트의 빌드 구성 설정
 project 'Runner', {
-  'Debug' => :debug,
+  'Debug'   => :debug,
   'Profile' => :release,
   'Release' => :release,
 }
 
+# flutter_root 메소드: Flutter SDK 경로를 설정 (flutter pub get을 먼저 실행해야 함)
 def flutter_root
   generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
   unless File.exist?(generated_xcode_build_settings_path)
@@ -15,14 +19,15 @@ def flutter_root
   end
 
   File.foreach(generated_xcode_build_settings_path) do |line|
-    matches = line.match(/FLUTTER_ROOT\=(.*)/)
-    return matches[1].strip if matches
+    if matches = line.match(/FLUTTER_ROOT\=(.*)/)
+      return matches[1].strip
+    end
   end
   raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Generated.xcconfig, then run flutter pub get"
 end
 
+# Flutter 관련 pod helper 스크립트 로드
 require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
-
 flutter_ios_podfile_setup
 
 target 'Runner' do
@@ -30,8 +35,19 @@ target 'Runner' do
   use_modular_headers!
 
   # GTMSessionFetcher/Core와 GoogleSignIn 간의 버전 충돌 해결
-  pod 'GoogleSignIn', '~> 7.1' # 버전을 6.x로 다운그레이드
-  pod 'GTMSessionFetcher/Core', '~> 3.3' # GoogleSignIn이 요구하는 버전으로 조정
+  # - GoogleSignIn 7.x, GTMSessionFetcher/Core 3.x
+  pod 'GoogleSignIn', '~> 7.1'
+  pod 'GTMSessionFetcher/Core', '~> 3.3'
+
+  # Firebase 관련 Pods는 플러그인에서 자동 지정하므로 직접 명시 X
+  # (※ firebase_core, cloud_firestore 등이 내부적으로 사용하는 SDK 버전에 맞춰집니다.)
+  #
+  # 예: 아래 항목들을 제거/주석 처리
+  # pod 'Firebase/Core', '11.6.0'
+  # pod 'Firebase/Auth', '11.6.0'
+  # pod 'Firebase/AppCheck', '11.6.0'
+  # pod 'FirebaseCoreExtension', '11.6.0'
+  # pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => '11.6.0'
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 
@@ -42,11 +58,37 @@ end
 
 post_install do |installer|
   installer.pods_project.targets.each do |target|
-    flutter_additional_ios_build_settings(target)
-
-    # iOS 13 이상 배포 타겟 설정
+    # 각 타겟의 모든 빌드 구성에 대해 설정 적용
     target.build_configurations.each do |config|
+      # 미리 정의된 전처리기 상수 설정 (권한 관련 플래그 등)
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
+        '$(inherited)',
+        'PERMISSION_CAMERA=1',
+        'PERMISSION_MICROPHONE=1',
+      ]
+      # iOS 배포 타겟을 14.0 (혹은 13.0 등)으로 지정
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '14.0'
     end
+
+    # BoringSSL-GRPC 타겟: 불필요한 경고 억제 플래그 제거
+    if target.name == 'BoringSSL-GRPC'
+      target.source_build_phase.files.each do |file|
+        if file.settings && file.settings['COMPILER_FLAGS']
+          flags = file.settings['COMPILER_FLAGS'].split
+          flags.reject! { |flag| flag == '-GCC_WARN_INHIBIT_ALL_WARNINGS' }
+          file.settings['COMPILER_FLAGS'] = flags.join(' ')
+        end
+      end
+    end
+
+    # abseil 타겟: C++ 표준을 gnu++14로 설정
+    if target.name == 'abseil'
+      target.build_configurations.each do |config|
+        config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'gnu++14'
+      end
+    end
+
+    # Flutter에서 추가로 필요한 iOS 빌드 설정 적용
+    flutter_additional_ios_build_settings(target)
   end
 end

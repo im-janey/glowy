@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'widget/bar_chart.dart';
-import 'widget/button.dart';
+import 'widget/date_selector.dart';
 import 'widget/pie_chart.dart';
 
 class YearlyReportPage extends StatefulWidget {
@@ -14,14 +16,7 @@ class YearlyReportPage extends StatefulWidget {
 }
 
 class _YearlyReportPageState extends State<YearlyReportPage> {
-  final List<Map<String, dynamic>> pieData = [
-    {'color': const Color(0xffFFB7B2), 'label': '동아리', 'value': 3},
-    {'color': const Color(0xffC3D8F8), 'label': '봉사', 'value': 3},
-    {'color': const Color(0xffFFD4F8), 'label': '공부', 'value': 2},
-    {'color': const Color(0xffCEECFF), 'label': '독서', 'value': 2},
-    {'color': const Color(0xffD9FEB5), 'label': '여행', 'value': 1},
-    {'color': const Color(0xffCCB8FE), 'label': '공모전', 'value': 1},
-  ];
+  List<Map<String, dynamic>> pieData = [];
 
   final List<Map<String, dynamic>> barData = [
     {'month': 1, 'value': 16},
@@ -39,14 +34,87 @@ class _YearlyReportPageState extends State<YearlyReportPage> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    fetchPieData();
+  }
+
+  Future<void> fetchPieData() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('categories')
+          .doc(uid)
+          .get();
+
+      if (!doc.exists || doc.data() == null) return;
+      final data = doc.data()!;
+
+      List<Map<String, dynamic>> tempData = [];
+
+      for (var key in data.keys) {
+        if (data[key]['title'] == '전체') continue;
+
+        Color categoryColor = await fetchCategoryColor(data[key]['color']);
+        int activityCount = await fetchActivityCount(key, uid);
+
+        tempData.add({
+          'color': categoryColor,
+          'label': data[key]['title'],
+          'value': activityCount,
+        });
+      }
+
+      setState(() {
+        pieData = tempData;
+      });
+    } catch (e) {
+      debugPrint('Error fetching pie chart data: ${e.toString()}');
+    }
+  }
+
+  Future<Color> fetchCategoryColor(String colorName) async {
+    try {
+      DocumentSnapshot doc = await FirebaseFirestore.instance
+          .collection('colors')
+          .doc(colorName)
+          .get();
+
+      if (!doc.exists) {
+        return Colors.grey; // 기본 색상
+      }
+
+      final data = doc.data() as Map<String, dynamic>;
+      return Color(int.parse("0xFF${data['hexColor']}"));
+    } catch (e) {
+      debugPrint('Error fetching color: $e');
+      return Colors.grey;
+    }
+  }
+
+  Future<int> fetchActivityCount(String categoryId, String uid) async {
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('activities')
+          .where('uid', isEqualTo: uid)
+          .where('categoryId', isEqualTo: categoryId)
+          .get();
+      return snapshot.docs.length;
+    } catch (e) {
+      debugPrint('Error fetching activity count: $e');
+      return 0;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-        child: Padding(
-      padding: const EdgeInsets.all(16.0), // ✅ 전체 여백 추가
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const StepperWidget(),
+          const YearlyStepper(),
           const SizedBox(height: 16),
 
           /// 파이 차트 위젯
@@ -72,7 +140,7 @@ class _YearlyReportPageState extends State<YearlyReportPage> {
               ],
             ),
           ),
-          const SizedBox(height: 40),
+          const SizedBox(height: 30),
 
           /// 월별 기록 (막대 그래프)
           Container(
@@ -91,15 +159,7 @@ class _YearlyReportPageState extends State<YearlyReportPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  "월별 기록",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 30),
                 SizedBox(
                   height: 200,
                   child: BarChartWidget(barData: barData),
@@ -109,6 +169,6 @@ class _YearlyReportPageState extends State<YearlyReportPage> {
           ),
         ],
       ),
-    ));
+    );
   }
 }

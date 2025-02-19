@@ -10,6 +10,8 @@ class FreeQuestionsPage extends StatefulWidget {
 
 class _FreeQuestionsPageState extends State<FreeQuestionsPage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  // Firestore의 실제 키 (영어)
   final List<String> _stages = [
     "start",
     "middle",
@@ -18,6 +20,16 @@ class _FreeQuestionsPageState extends State<FreeQuestionsPage> {
     "expert",
     "insight"
   ];
+
+  // 영어 키를 한글 레이블로 변환
+  final Map<String, String> _stageLabels = {
+    "start": "시작 단계",
+    "middle": "진행 단계",
+    "finish": "마무리 단계",
+    "introspection": "삶의 발견",
+    "expert": "전문성",
+    "insight": "개인성장",
+  };
 
   String _selectedStage = "start";
   List<Map<String, dynamic>> _questions = [];
@@ -46,11 +58,10 @@ class _FreeQuestionsPageState extends State<FreeQuestionsPage> {
           _questions = querySnapshot.docs.asMap().entries.map((entry) {
             int index = entry.key;
             DocumentSnapshot doc = entry.value;
-
             return {
               "content": doc['text'],
               "stage": stage,
-              "index": index, // 🔹 인덱스 저장
+              "index": index,
             };
           }).toList();
         });
@@ -75,45 +86,48 @@ class _FreeQuestionsPageState extends State<FreeQuestionsPage> {
     }
   }
 
-  Widget _buildStageTab(String stage) {
+  Widget _buildStageTab(String stageKey) {
+    final bool isSelected = (_selectedStage == stageKey);
+
     return GestureDetector(
       onTap: () {
         setState(() {
-          _selectedStage = stage;
+          _selectedStage = stageKey;
         });
-        _fetchQuestions(stage);
+        _fetchQuestions(stageKey);
       },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(
-              color: _selectedStage == stage
-                  ? const Color(0xFF659AD0)
-                  : Colors.transparent,
+              color: isSelected ? const Color(0xFF659AD0) : Colors.transparent,
               width: 2,
             ),
           ),
         ),
         child: Text(
-          stage.toUpperCase(),
+          _stageLabels[stageKey] ?? stageKey,
           style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: _selectedStage == stage ? Colors.black : Colors.grey,
+            fontSize: 15,
+            fontFamily: 'Pretendard Variable',
+            fontWeight: FontWeight.w600,
+            color:
+                isSelected ? const Color(0xFF33568C) : const Color(0xFF5F7EAF),
           ),
         ),
       ),
     );
   }
 
+  // 🔹 recommend.dart와 동일한 스타일 (padding: horizontal 26, vertical 25)
   Widget _buildQuestionItem(Map<String, dynamic> questionData) {
     return GestureDetector(
       onTap: () {
         Navigator.pop(context, questionData);
       },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 25),
         child: Text(
           questionData['content'],
           style: const TextStyle(
@@ -126,13 +140,33 @@ class _FreeQuestionsPageState extends State<FreeQuestionsPage> {
     );
   }
 
+  // 🔹 recommend.dart와 동일한 구분선 (Divider) 스타일
+  Widget _buildDivider() {
+    return Container(
+      width: double.infinity,
+      height: 0.7,
+      color: const Color(0xFFDADADA),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("질문에 답하기"),
+        title: const Text(
+          "질문에 답하기",
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 18,
+            fontFamily: 'Pretendard Variable',
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         backgroundColor: Colors.white,
         elevation: 0,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
         iconTheme: const IconThemeData(color: Colors.black),
         titleTextStyle: const TextStyle(
           color: Colors.black,
@@ -159,9 +193,12 @@ class _FreeQuestionsPageState extends State<FreeQuestionsPage> {
           else
             Expanded(
               child: ListView(
-                children: _questions
-                    .map((question) => _buildQuestionItem(question))
-                    .toList(),
+                children: [
+                  for (var question in _questions) ...[
+                    _buildQuestionItem(question),
+                    _buildDivider(),
+                  ]
+                ],
               ),
             ),
         ],

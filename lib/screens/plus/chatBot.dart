@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,20 +6,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class ChatBotPage extends StatefulWidget {
-  final String title;
+  final String activityName;
+  final String category; // 추가됨: 활동 카테고리
+  final DateTime startDate; // 추가됨: 활동 시작일
+  final DateTime endDate; // 추가됨: 활동 종료일
   final String stage;
-  final String category;
-  final DateTime startedAt;
-  final DateTime finishedAt;
 
   const ChatBotPage({
-    super.key,
+    Key? key,
+    required this.activityName,
     required this.category,
-    required this.startedAt,
-    required this.finishedAt,
-    required this.title,
+    required this.startDate,
+    required this.endDate,
     required this.stage,
-  });
+  }) : super(key: key);
 
   @override
   _ChatBotPageState createState() => _ChatBotPageState();
@@ -33,18 +32,16 @@ class _ChatBotPageState extends State<ChatBotPage> {
   final ScrollController _scrollController = ScrollController();
 
   List<DocumentSnapshot> _questions = [];
-  final List<Map<String, dynamic>> _conversation = [];
+  List<Map<String, dynamic>> _conversation = [];
   int _currentQuestionIndex = 0;
   String _nickname = "사용자";
   int? _editingIndex; // 편집 모드일 때 인덱스 (null이면 일반 입력)
 
   // 역량(스킬) 선택 관련 변수
-  // 커스텀 질문(역량 질문)일 때 _isSkillSelection을 true로 설정합니다.
   bool _isSkillSelection = false;
-  // 아직 카테고리가 선택되지 않았으면 null, 선택 시 해당 카테고리 문자열 저장
   String? _selectedCategory;
 
-  // 7가지 카테고리 및 각 카테고리의 하위 역량 목록
+  // 7가지 카테고리와 각 카테고리의 하위 역량 목록
   final List<String> _categories = [
     "👥 협업 및 대인관계",
     "🚀 자기계발",
@@ -170,17 +167,16 @@ class _ChatBotPageState extends State<ChatBotPage> {
   /// Firestore에 답변(활동 기록)을 저장합니다.
   Future<void> _saveResponsesToFirestore() async {
     try {
-      User? user = _auth.currentUser;
-
-      await _firestore.collection('activities').add({
-        'uid': user?.uid,
-        'title': widget.title,
+      await _firestore.collection('responses').add({
+        'activityName': widget.activityName,
         'category': widget.category,
+        'startDate': widget.startDate,
+        'endDate': widget.endDate,
         'stage': widget.stage,
-        'startedAt': Timestamp.fromDate(widget.startedAt),
-        'finishedAt': Timestamp.fromDate(widget.finishedAt),
+        'mode': 'chatbot',
         'timestamp': FieldValue.serverTimestamp(),
         'conversation': _conversation,
+        'isFavorite': false,
       });
       print("✅ 답변 저장 완료");
     } catch (e) {
@@ -376,6 +372,7 @@ class _ChatBotPageState extends State<ChatBotPage> {
             _conversation.last["answer"].toString().isEmpty);
 
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [
@@ -390,7 +387,7 @@ class _ChatBotPageState extends State<ChatBotPage> {
                   ),
                   Expanded(
                     child: Text(
-                      widget.title,
+                      widget.activityName,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontSize: 18,
@@ -493,8 +490,8 @@ class _ChatBotPageState extends State<ChatBotPage> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: _selectedCategory == null
-                    ? _buildCategoryChips() // 초기에는 7가지 카테고리 칩 표시
-                    : _buildSkillChips(), // 카테고리 선택 후, 하위 역량 칩 표시 (7가지 카테고리는 사라짐)
+                    ? _buildCategoryChips()
+                    : _buildSkillChips(),
               ),
             // 이전/다음/완료 버튼 영역
             Padding(

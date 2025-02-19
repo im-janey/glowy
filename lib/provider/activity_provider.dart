@@ -28,6 +28,10 @@ class ActivityProvider with ChangeNotifier {
       for (var doc in snapshot.docs) {
         Map<String, dynamic> activity = {'id': doc.id, ...doc.data()};
 
+        activity['startedAt'] = (activity['startedAt'] as Timestamp?)?.toDate();
+        activity['finishedAt'] =
+            (activity['finishedAt'] as Timestamp?)?.toDate();
+
         String? categoryId = activity['categoryId'];
 
         if (categoryId != null) {
@@ -72,6 +76,10 @@ class ActivityProvider with ChangeNotifier {
       for (var doc in snapshot.docs) {
         Map<String, dynamic> activity = {'id': doc.id, ...doc.data()};
 
+        activity['startedAt'] = (activity['startedAt'] as Timestamp?)?.toDate();
+        activity['finishedAt'] =
+            (activity['finishedAt'] as Timestamp?)?.toDate();
+
         String? categoryId = activity['categoryId'];
 
         if (categoryId != null) {
@@ -101,7 +109,14 @@ class ActivityProvider with ChangeNotifier {
   Future<Map<String, dynamic>?> getActivityById(String docId) async {
     try {
       final doc = await _firestore.collection('activities').doc(docId).get();
-      return doc.exists ? {'id': doc.id, ...doc.data()!} : null;
+      if (!doc.exists) return null;
+
+      Map<String, dynamic> activity = {'id': doc.id, ...doc.data()!};
+
+      activity['startedAt'] = (activity['startedAt'] as Timestamp?)?.toDate();
+      activity['finishedAt'] = (activity['finishedAt'] as Timestamp?)?.toDate();
+
+      return activity;
     } catch (e, stackTrace) {
       debugPrint('Error fetching activity: $e');
       debugPrint('Stack trace: $stackTrace');

@@ -18,15 +18,16 @@ class _ReportPageState extends State<ReportPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF2F4F5),
       appBar: AppBar(
         title: const Text('통계 및 분석'),
+        backgroundColor: const Color(0xFFF2F4F5),
       ),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           children: [
             _buildSegmentControl(),
-            const SizedBox(height: 16),
             isMonthly
                 ? MonthlyReportPage(selectedUnit: selectedMonth)
                 : YearlyReportPage(selectedUnit: selectedYear),

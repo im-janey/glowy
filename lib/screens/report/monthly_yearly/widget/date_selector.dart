@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
-class DropdownWidget extends StatefulWidget {
-  const DropdownWidget({super.key});
+class MonthlyDropdown extends StatefulWidget {
+  final Function(String) onMonthChanged;
+
+  const MonthlyDropdown({required this.onMonthChanged, super.key});
 
   @override
-  _DropdownWidgetState createState() => _DropdownWidgetState();
+  State<MonthlyDropdown> createState() => _MonthlyDropdownState();
 }
 
-class _DropdownWidgetState extends State<DropdownWidget> {
+class _MonthlyDropdownState extends State<MonthlyDropdown> {
   String selectedMonth = DateTime.now().month.toString();
 
   final List<String> months =
@@ -15,8 +17,7 @@ class _DropdownWidgetState extends State<DropdownWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerLeft,
+    return DropdownButtonHideUnderline(
       child: DropdownButton<String>(
         value: selectedMonth,
         icon: const Icon(
@@ -31,9 +32,12 @@ class _DropdownWidgetState extends State<DropdownWidget> {
           fontWeight: FontWeight.w500,
         ),
         onChanged: (String? newValue) {
-          setState(() {
-            selectedMonth = newValue!;
-          });
+          if (newValue != null) {
+            setState(() {
+              selectedMonth = newValue;
+            });
+            widget.onMonthChanged(newValue);
+          }
         },
         items: months.map<DropdownMenuItem<String>>((String value) {
           return DropdownMenuItem<String>(
@@ -41,19 +45,21 @@ class _DropdownWidgetState extends State<DropdownWidget> {
             child: Text('$value월'),
           );
         }).toList(),
+        dropdownColor: Colors.white,
+        borderRadius: BorderRadius.circular(16),
       ),
     );
   }
 }
 
-class StepperWidget extends StatefulWidget {
-  const StepperWidget({super.key});
+class YearlyStepper extends StatefulWidget {
+  const YearlyStepper({super.key});
 
   @override
-  _StepperWidgetState createState() => _StepperWidgetState();
+  _YearlyStepperState createState() => _YearlyStepperState();
 }
 
-class _StepperWidgetState extends State<StepperWidget> {
+class _YearlyStepperState extends State<YearlyStepper> {
   int selectedYear = DateTime.now().year;
 
   void _incrementYear() {

@@ -1,12 +1,11 @@
-import 'package:bossam/screens/plus/chatBot.dart';
-import 'package:bossam/screens/plus/chatFree.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../provider/category_provider.dart';
+import 'chatBot.dart';
+import 'chatFree.dart';
 
 class RecordPage extends StatefulWidget {
   const RecordPage({super.key});
@@ -26,6 +25,7 @@ class _RecordPageState extends State<RecordPage> {
   TextEditingController activityController = TextEditingController();
 
   // 캘린더 관련 상태
+  CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedStartDay;
   DateTime? _selectedEndDay;
@@ -57,34 +57,108 @@ class _RecordPageState extends State<RecordPage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('새 카테고리 추가'),
-          content: TextField(
-            controller: categoryController,
-            decoration: const InputDecoration(
-              labelText: '카테고리 이름',
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.all(20),
+          child: Container(
+            width: 340,
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+            decoration: ShapeDecoration(
+              color: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              shadows: const [
+                BoxShadow(
+                  color: Color(0x26000000),
+                  blurRadius: 6,
+                  offset: Offset(0, 2),
+                  spreadRadius: 0,
+                )
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // 팝업 제목
+                const Text(
+                  '새 카테고리 추가',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontFamily: 'Pretendard Variable',
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF121212),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                // 텍스트필드 스타일 (활동 기본 정보 입력과 동일)
+                Container(
+                  width: double.infinity,
+                  height: 43,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: const Color(0xFFBABABA)),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: TextField(
+                      controller: categoryController,
+                      decoration: const InputDecoration(
+                        hintText: '카테고리 이름',
+                        hintStyle: TextStyle(
+                          color: Color(0xFF121212),
+                          fontSize: 14,
+                          fontFamily: 'Pretendard Variable',
+                          fontWeight: FontWeight.w500,
+                        ),
+                        border: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text(
+                        '취소',
+                        style: TextStyle(
+                          fontFamily: 'Pretendard Variable',
+                          fontWeight: FontWeight.w400,
+                          color: Color(0xFF424248),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    // 추가 버튼
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          categories.add(categoryController.text);
+                          // 새 카테고리 추가 시 dropdownValue도 해당 값으로 변경
+                          dropdownValue = categoryController.text;
+                        });
+                        categoryController.clear();
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text(
+                        '추가',
+                        style: TextStyle(
+                          fontFamily: 'Pretendard Variable',
+                          fontWeight: FontWeight.w400,
+                          color: Color(0xFF33568C),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('취소'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: const Text('추가'),
-              onPressed: () {
-                setState(() {
-                  categories.add(categoryController.text);
-                  // 새 카테고리 추가 시 dropdownValue도 해당 값으로 변경
-                  dropdownValue = categoryController.text;
-                });
-                categoryController.clear();
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
         );
       },
     );
@@ -111,25 +185,150 @@ class _RecordPageState extends State<RecordPage> {
     });
   }
 
-  Future<bool> _onWillPop() async {
-    if (!_isAllFieldsFilled) {
-      final shouldPop = await showCupertinoDialog<bool>(
-        context: context,
-        builder: (context) => CupertinoAlertDialog(
-          title: const Text('알림'),
-          content: const Text('작성을 취소하시겠습니까?'),
+  void _showIncompleteFieldsPopup() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          // 타이틀에 IconButton과 텍스트를 Row로 배치
+          title: Row(
+            children: [
+              IconButton(
+                icon: const Icon(
+                  Icons.chevron_left,
+                  size: 35,
+                  color: Colors.black,
+                ),
+                onPressed: () => Navigator.pop(context),
+              ),
+              // 중앙에 타이틀 텍스트 배치
+              const Expanded(
+                child: Text(
+                  '알림',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 35),
+            ],
+          ),
+          content: const Text('모든 필수 정보를 입력해주세요.'),
           actions: [
-            CupertinoDialogAction(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('아니오'),
-            ),
-            CupertinoDialogAction(
-              onPressed: () => Navigator.pop(context, true),
-              isDestructiveAction: true,
-              child: const Text('예'),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('확인'),
             ),
           ],
-        ),
+        );
+      },
+    );
+  }
+
+  Future<bool> _onWillPop() async {
+    if (!_isAllFieldsFilled) {
+      final shouldPop = await showDialog<bool>(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            backgroundColor: Colors.transparent,
+            insetPadding: const EdgeInsets.all(20),
+            child: Container(
+              width: 340,
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+              decoration: ShapeDecoration(
+                color: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                shadows: const [
+                  BoxShadow(
+                    color: Color(0x26000000),
+                    blurRadius: 6,
+                    offset: Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      // AppBar와 동일하게 좌측 패딩 16 적용
+                      IconButton(
+                        padding: const EdgeInsets.only(left: 16),
+                        constraints: const BoxConstraints(),
+                        icon: const Icon(
+                          Icons.chevron_left,
+                          size: 35,
+                          color: Colors.black,
+                        ),
+                        onPressed: () => Navigator.pop(context, false),
+                      ),
+                      Expanded(
+                        child: Container(
+                          margin: const EdgeInsets.only(right: 35),
+                          child: const Text(
+                            '알림',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    '작성을 취소하시겠습니까?',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontFamily: 'Pretendard Variable',
+                      fontWeight: FontWeight.w400,
+                      color: Color(0xFF121212),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: const Text(
+                          '아니오',
+                          style: TextStyle(
+                            fontFamily: 'Pretendard Variable',
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xFF424248),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, true),
+                        child: const Text(
+                          '예',
+                          style: TextStyle(
+                            fontFamily: 'Pretendard Variable',
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xFF33568C),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       );
       return shouldPop ?? false;
     }
@@ -678,10 +877,10 @@ class _RecordPageState extends State<RecordPage> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => ChatBotPage(
-                                        title: activityController.text,
+                                        activityName: activityController.text,
                                         category: dropdownValue,
-                                        startedAt: _selectedStartDay!,
-                                        finishedAt: _selectedEndDay!,
+                                        startDate: _selectedStartDay!,
+                                        endDate: _selectedEndDay!,
                                         stage: selectedStage,
                                       ),
                                     ),
@@ -691,10 +890,10 @@ class _RecordPageState extends State<RecordPage> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => ChatFreePage(
-                                        title: activityController.text,
+                                        activityName: activityController.text,
                                         category: dropdownValue,
-                                        startedAt: _selectedStartDay!,
-                                        finishedAt: _selectedEndDay!,
+                                        startDate: _selectedStartDay!,
+                                        endDate: _selectedEndDay!,
                                         stage: selectedStage,
                                       ),
                                     ),
