@@ -3,7 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../screens/home/home.dart';
 import '../screens/my_page/profile.dart';
-import '../screens/plus/record.dart';
+import '../screens/record/record.dart';
 import '../screens/report/report.dart';
 
 class CustomNavigationBar extends StatefulWidget {

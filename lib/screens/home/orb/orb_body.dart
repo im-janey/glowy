@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../provider/category_provider.dart';
+import '../widgets.dart';
 import 'card_view.dart';
 import 'filter.dart';
 import 'list_view.dart';
-import '../widgets.dart';
 
 class OrbBody extends StatefulWidget {
   const OrbBody({super.key});
@@ -48,7 +48,6 @@ class _OrbBodyState extends State<OrbBody> {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final categoryProvider = Provider.of<CategoryProvider>(context);
     final categories = categoryProvider.categories;
 
@@ -94,8 +93,16 @@ class _OrbBodyState extends State<OrbBody> {
               ),
 
               Expanded(
-                child:
-                    _showList ? const CustomCardView() : const CustomListView(),
+                // _selectedFilter 값을 자식에게 전달
+                child: _showList
+                    ? CustomCardView(
+                        sortOrder: _selectedFilter,
+                        activities: const [],
+                      )
+                    : CustomListView(
+                        sortOrder: _selectedFilter,
+                        activities: const [],
+                      ),
               ),
             ],
           ),

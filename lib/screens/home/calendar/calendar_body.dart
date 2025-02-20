@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -31,6 +30,7 @@ class _CalendarBodyState extends State<CalendarBody> {
       padding: const EdgeInsets.all(16.0),
       child: Column(
         children: [
+          // 상단 달 표시와 버튼
           Padding(
             padding:
                 const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
@@ -93,6 +93,7 @@ class _CalendarBodyState extends State<CalendarBody> {
               ],
             ),
           ),
+          // 달력
           TableCalendar(
             firstDay: DateTime(2020, 1, 1),
             lastDay: DateTime(2030, 12, 31),
@@ -118,7 +119,7 @@ class _CalendarBodyState extends State<CalendarBody> {
               todayDecoration: const BoxDecoration(),
               todayTextStyle: const TextStyle(fontWeight: FontWeight.w700),
               selectedDecoration: BoxDecoration(
-                color: const Color(0xff9DB2D3).withOpacity(0.47),
+                color: Color(0xff9DB2D3).withOpacity(0.47),
                 shape: BoxShape.circle,
               ),
               selectedTextStyle: const TextStyle(
@@ -132,21 +133,29 @@ class _CalendarBodyState extends State<CalendarBody> {
             ),
           ),
           const SizedBox(height: 15),
+          // 선택된 날짜의 Activity 표시
           Expanded(
             child: Consumer<ActivityProvider>(
               builder: (context, activityProvider, child) {
                 final activities = activityProvider.activities;
 
+                // Provider에서 이미 startedAt은 DateTime?으로 변환되어 있다고 가정
                 final filteredActivities = activities.where((activity) {
-                  if (activity['startedAt'] == null) return false;
+                  final DateTime? startedAt =
+                      activity['startedAt'] as DateTime?;
+                  if (startedAt == null || _selectedDay == null) return false;
 
-                  DateTime startedAt =
-                      (activity['startedAt'] as Timestamp).toDate();
-                  DateTime startedAtDateOnly =
-                      DateTime(startedAt.year, startedAt.month, startedAt.day);
-
-                  DateTime selectedDayOnly = DateTime(_selectedDay!.year,
-                      _selectedDay!.month, _selectedDay!.day);
+                  // 날짜 부분만 비교
+                  final startedAtDateOnly = DateTime(
+                    startedAt.year,
+                    startedAt.month,
+                    startedAt.day,
+                  );
+                  final selectedDayOnly = DateTime(
+                    _selectedDay!.year,
+                    _selectedDay!.month,
+                    _selectedDay!.day,
+                  );
 
                   return startedAtDateOnly == selectedDayOnly;
                 }).toList();

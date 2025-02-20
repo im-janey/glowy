@@ -26,13 +26,21 @@ class ActivityProvider with ChangeNotifier {
       List<Map<String, dynamic>> updatedActivities = [];
 
       for (var doc in snapshot.docs) {
-        Map<String, dynamic> activity = {'id': doc.id, ...doc.data()};
+        final data = doc.data();
+        Map<String, dynamic> activity = {
+          'id': doc.id,
+          ...data,
+        };
 
-        activity['startedAt'] = (activity['startedAt'] as Timestamp?)?.toDate();
-        activity['finishedAt'] =
-            (activity['finishedAt'] as Timestamp?)?.toDate();
+        // Timestamp → DateTime 변환 시 null 체크
+        final Timestamp? startedAtTimestamp = data['startedAt'];
+        final Timestamp? finishedAtTimestamp = data['finishedAt'];
 
-        String? categoryId = activity['categoryId'];
+        activity['startedAt'] = startedAtTimestamp?.toDate();
+        activity['finishedAt'] = finishedAtTimestamp?.toDate();
+
+        String? categoryId = data['categoryId'];
+        activity['color'] = 'grey'; // 기본값
 
         if (categoryId != null) {
           final categoryDoc =
@@ -46,8 +54,6 @@ class ActivityProvider with ChangeNotifier {
               activity['color'] = categoriesData[categoryId]['color'] ?? 'grey';
             }
           }
-        } else {
-          activity['color'] = 'grey';
         }
 
         updatedActivities.add(activity);
@@ -74,13 +80,21 @@ class ActivityProvider with ChangeNotifier {
       List<Map<String, dynamic>> updatedActivities = [];
 
       for (var doc in snapshot.docs) {
-        Map<String, dynamic> activity = {'id': doc.id, ...doc.data()};
+        final data = doc.data();
+        Map<String, dynamic> activity = {
+          'id': doc.id,
+          ...data,
+        };
 
-        activity['startedAt'] = (activity['startedAt'] as Timestamp?)?.toDate();
-        activity['finishedAt'] =
-            (activity['finishedAt'] as Timestamp?)?.toDate();
+        // Timestamp → DateTime 변환 시 null 체크
+        final Timestamp? startedAtTimestamp = data['startedAt'];
+        final Timestamp? finishedAtTimestamp = data['finishedAt'];
 
-        String? categoryId = activity['categoryId'];
+        activity['startedAt'] = startedAtTimestamp?.toDate();
+        activity['finishedAt'] = finishedAtTimestamp?.toDate();
+
+        String? categoryId = data['categoryId'];
+        activity['color'] = 'grey'; // 기본값
 
         if (categoryId != null) {
           final categoryDoc =
@@ -94,8 +108,6 @@ class ActivityProvider with ChangeNotifier {
               activity['color'] = categoriesData[categoryId]['color'] ?? 'grey';
             }
           }
-        } else {
-          activity['color'] = 'grey';
         }
 
         updatedActivities.add(activity);
@@ -111,10 +123,18 @@ class ActivityProvider with ChangeNotifier {
       final doc = await _firestore.collection('activities').doc(docId).get();
       if (!doc.exists) return null;
 
-      Map<String, dynamic> activity = {'id': doc.id, ...doc.data()!};
+      final data = doc.data()!;
+      Map<String, dynamic> activity = {
+        'id': doc.id,
+        ...data,
+      };
 
-      activity['startedAt'] = (activity['startedAt'] as Timestamp?)?.toDate();
-      activity['finishedAt'] = (activity['finishedAt'] as Timestamp?)?.toDate();
+      // Timestamp → DateTime 변환 시 null 체크
+      final Timestamp? startedAtTimestamp = data['startedAt'];
+      final Timestamp? finishedAtTimestamp = data['finishedAt'];
+
+      activity['startedAt'] = startedAtTimestamp?.toDate();
+      activity['finishedAt'] = finishedAtTimestamp?.toDate();
 
       return activity;
     } catch (e, stackTrace) {

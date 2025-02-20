@@ -26,11 +26,11 @@
 		</data>
 		<key>Modules/FirebaseCoreInternal.swiftmodule/Project/arm64-apple-ios-simulator.swiftsourceinfo</key>
 		<data>
-		KdWNxccDSPBJQe4c+NDWhlp2W+M=
+		/Yqgz1OzBQm50au3pjiyBnJE6m8=
 		</data>
 		<key>Modules/FirebaseCoreInternal.swiftmodule/Project/x86_64-apple-ios-simulator.swiftsourceinfo</key>
 		<data>
-		5PTj0Nofsh5Tcr+mAhSSeIT20GI=
+		zAyA0dyES6rxqlOnJ2H7eD7kkx8=
 		</data>
 		<key>Modules/FirebaseCoreInternal.swiftmodule/arm64-apple-ios-simulator.abi.json</key>
 		<data>
@@ -42,7 +42,7 @@
 		</data>
 		<key>Modules/FirebaseCoreInternal.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		VRasIcGO6Ut6vIveli8lMEPjxXU=
+		ZmGxz5kHie5Lh7/ziHgmWSN7FlM=
 		</data>
 		<key>Modules/FirebaseCoreInternal.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<data>
@@ -54,7 +54,7 @@
 		</data>
 		<key>Modules/FirebaseCoreInternal.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		9P1uPxx29DyE46yc51Lg7QUpMGk=
+		4QEDL5317X52Dt64aJLfiVza6VE=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -95,14 +95,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			i8NUyKEw6aftTvDcc+LrzMMr9xmZs9ugEaGn7HFX4bk=
+			GS4i3G5Vwn0C6f/u2npE6SgyOsLSOe5OnSf8U5BI6w8=
 			</data>
 		</dict>
 		<key>Modules/FirebaseCoreInternal.swiftmodule/Project/x86_64-apple-ios-simulator.swiftsourceinfo</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			bKV1MEPJ8hAE6j2tUs3a0kbPmRb39O75jWt9f4uOsB8=
+			OyQUKIN0By9kfiSisllBgvcNiGxpe069eHNNuxxDh/w=
 			</data>
 		</dict>
 		<key>Modules/FirebaseCoreInternal.swiftmodule/arm64-apple-ios-simulator.abi.json</key>
@@ -123,7 +123,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			iNPYVRCz45GGpYguI9w9jUTR45AoRUWcAfzkDmNt+zA=
+			GkAnHaXCsC6hrimYV77qzio5h/DnaiGD7nt9Hz50wBo=
 			</data>
 		</dict>
 		<key>Modules/FirebaseCoreInternal.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
@@ -144,7 +144,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			q/mv/BkeHFrWsuUuRkvv5W9GBIiIgDOoppbFHAVt4vA=
+			TtY0q95pWg3JR7AdbcD+VY9TXHud5x4zM+g1Bx8XemU=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
