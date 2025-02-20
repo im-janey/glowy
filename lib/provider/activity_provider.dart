@@ -41,17 +41,19 @@ class ActivityProvider with ChangeNotifier {
 
         String? categoryId = data['categoryId'];
         activity['color'] = 'grey'; // 기본값
+        activity['categoryTitle'] = ''; // 기본값
 
         if (categoryId != null) {
           final categoryDoc =
               await _firestore.collection('categories').doc(uid).get();
-
           if (categoryDoc.exists) {
             Map<String, dynamic>? categoriesData = categoryDoc.data();
             if (categoriesData != null &&
                 categoriesData.containsKey(categoryId) &&
                 categoriesData[categoryId] is Map<String, dynamic>) {
-              activity['color'] = categoriesData[categoryId]['color'] ?? 'grey';
+              final catData = categoriesData[categoryId];
+              activity['color'] = catData['color'] ?? 'grey';
+              activity['categoryTitle'] = catData['title'] ?? '';
             }
           }
         }
@@ -95,6 +97,7 @@ class ActivityProvider with ChangeNotifier {
 
         String? categoryId = data['categoryId'];
         activity['color'] = 'grey'; // 기본값
+        activity['categoryTitle'] = ''; // 기본값
 
         if (categoryId != null) {
           final categoryDoc =
@@ -105,7 +108,9 @@ class ActivityProvider with ChangeNotifier {
             if (categoriesData != null &&
                 categoriesData.containsKey(categoryId) &&
                 categoriesData[categoryId] is Map<String, dynamic>) {
-              activity['color'] = categoriesData[categoryId]['color'] ?? 'grey';
+              final catData = categoriesData[categoryId];
+              activity['color'] = catData['color'] ?? 'grey';
+              activity['categoryTitle'] = catData['title'] ?? '';
             }
           }
         }

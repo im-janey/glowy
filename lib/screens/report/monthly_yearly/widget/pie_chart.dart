@@ -3,36 +3,13 @@ import 'package:flutter/material.dart';
 
 class MonthlyPieChart extends StatelessWidget {
   final List<Map<String, dynamic>> pieData;
+  final String selectedUnit; // (1) selectedUnit 파라미터 추가
 
-  const MonthlyPieChart({super.key, required this.pieData});
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 200,
-      width: 200,
-      child: PieChart(
-        PieChartData(
-          sections: pieData
-              .map((data) => PieChartSectionData(
-                    color: data['color'],
-                    value: data['value'].toDouble(),
-                    radius: 29,
-                    showTitle: false,
-                  ))
-              .toList(),
-          sectionsSpace: 2,
-          centerSpaceRadius: 49,
-        ),
-      ),
-    );
-  }
-}
-
-class YearlyPieChart extends StatelessWidget {
-  final List<Map<String, dynamic>> pieData;
-
-  const YearlyPieChart({super.key, required this.pieData});
+  const MonthlyPieChart({
+    super.key,
+    required this.pieData,
+    required this.selectedUnit, // (2) 생성자에 반영
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -59,8 +36,13 @@ class YearlyPieChart extends StatelessWidget {
 
 class MonthlyLegend extends StatelessWidget {
   final List<Map<String, dynamic>> pieData;
+  final String selectedUnit; // (1) selectedUnit 파라미터 추가
 
-  const MonthlyLegend({super.key, required this.pieData});
+  const MonthlyLegend({
+    super.key,
+    required this.pieData,
+    required this.selectedUnit, // (2) 생성자에 반영
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -106,10 +88,48 @@ class MonthlyLegend extends StatelessWidget {
   }
 }
 
+class YearlyPieChart extends StatelessWidget {
+  final List<Map<String, dynamic>> pieData;
+  final dynamic selectedUnit;
+
+  const YearlyPieChart({
+    super.key,
+    required this.pieData,
+    required this.selectedUnit,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 200,
+      width: 200,
+      child: PieChart(
+        PieChartData(
+          sections: pieData
+              .map((data) => PieChartSectionData(
+                    color: data['color'],
+                    value: data['value'].toDouble(),
+                    radius: 29,
+                    showTitle: false,
+                  ))
+              .toList(),
+          sectionsSpace: 2,
+          centerSpaceRadius: 49,
+        ),
+      ),
+    );
+  }
+}
+
 class YearlyLegend extends StatelessWidget {
   final List<Map<String, dynamic>> pieData;
+  final dynamic selectedUnit;
 
-  const YearlyLegend({super.key, required this.pieData});
+  const YearlyLegend({
+    super.key,
+    required this.pieData,
+    required this.selectedUnit,
+  });
 
   @override
   Widget build(BuildContext context) {

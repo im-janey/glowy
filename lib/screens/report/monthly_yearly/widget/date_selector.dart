@@ -17,37 +17,42 @@ class _MonthlyDropdownState extends State<MonthlyDropdown> {
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButtonHideUnderline(
-      child: DropdownButton<String>(
-        value: selectedMonth,
-        icon: const Icon(
-          Icons.arrow_drop_down,
-          color: Colors.black,
-          size: 25,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        DropdownButtonHideUnderline(
+          child: DropdownButton<String>(
+            value: selectedMonth,
+            icon: const Icon(
+              Icons.arrow_drop_down,
+              color: Colors.black,
+              size: 25,
+            ),
+            elevation: 16,
+            style: const TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+              fontWeight: FontWeight.w500,
+            ),
+            onChanged: (String? newValue) {
+              if (newValue != null) {
+                setState(() {
+                  selectedMonth = newValue;
+                });
+                widget.onMonthChanged(newValue);
+              }
+            },
+            items: months.map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text('$value월'),
+              );
+            }).toList(),
+            dropdownColor: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+          ),
         ),
-        elevation: 16,
-        style: const TextStyle(
-          color: Colors.black,
-          fontSize: 20,
-          fontWeight: FontWeight.w500,
-        ),
-        onChanged: (String? newValue) {
-          if (newValue != null) {
-            setState(() {
-              selectedMonth = newValue;
-            });
-            widget.onMonthChanged(newValue);
-          }
-        },
-        items: months.map<DropdownMenuItem<String>>((String value) {
-          return DropdownMenuItem<String>(
-            value: value,
-            child: Text('$value월'),
-          );
-        }).toList(),
-        dropdownColor: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
+      ],
     );
   }
 }

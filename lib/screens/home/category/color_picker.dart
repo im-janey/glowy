@@ -29,38 +29,38 @@ class _ColorPickerBottomSheetState extends State<_ColorPickerBottomSheet> {
   /// 20가지 색상 (사진 속 순서대로 정렬하거나 원하는 순서대로 넣어주세요)
   final List<Color> _colorOptions = [
     // 첫 번째 줄(예: 블루 계열)
-    const Color(0xFFEAF4FF),
-    const Color(0xFFBFE5FF),
-    const Color(0xFFD7F8FF),
-    const Color(0xFFADC7FF),
-    const Color(0xFFF1E8FF),
+    const Color(0xFFEEF7FC),
+    const Color(0xFFE0F1FF),
+    const Color(0xFFD1EFFE),
+    const Color(0xFFDAF8F9),
+    const Color(0xFFC9DDFF),
 
     // 두 번째 줄(예: 퍼플 계열)
-    const Color(0xFFF5D0FF),
-    const Color(0xFFE0BFFF),
-    const Color(0xFFD4C2FF),
-    const Color(0xFFE8FFE8),
-    const Color(0xFFFFFBC0),
+    const Color(0xFFF3F0FB),
+    const Color(0xFFFAE5FE),
+    const Color(0xFFEFD9FF),
+    const Color(0xFFE2D5F1),
+    const Color(0xFFE0E4FF),
 
     // 세 번째 줄(예: 그린 계열)
-    const Color(0xFFDAFFA8),
-    const Color(0xFFC8E6C9),
-    const Color(0xFFFFEAE5),
-    const Color(0xFFFFC8C8),
-    const Color(0xFFFFA3A3),
+    const Color(0xFFE7FFEC),
+    const Color(0xFFF8FDD6),
+    const Color(0xFFE8FFC9),
+    const Color(0xFFE5FFE5),
+    const Color(0xFFCCEAD3),
 
     // 네 번째 줄(예: 레드/옅은 오렌지/베이지 계열)
-    const Color(0xFFF4D4C4),
-    const Color(0xFFFFF5CC),
-    const Color(0xFFFFEB99),
-    const Color(0xFFFFD9A5),
-    const Color(0xFFE0D4C2),
+    const Color(0xFFFFEEEE),
+    const Color(0xFFFFE3E8),
+    const Color(0xFFFFD1D6),
+    const Color(0xFFFFD2C9),
+    const Color(0xFFE9D3D4),
 
-    const Color(0xFFF4D4C4),
-    const Color(0xFFFFF5CC),
-    const Color(0xFFFFEB99),
-    const Color(0xFFFFD9A5),
-    const Color(0xFFE0D4C2),
+    const Color(0xFFFFF4CC),
+    const Color(0xFFFFF1B0),
+    const Color(0xFFFFE6C9),
+    const Color(0xFFEDDCCD),
+    const Color(0xFFDEDBE5),
   ];
 
   @override

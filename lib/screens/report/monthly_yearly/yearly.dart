@@ -134,8 +134,8 @@ class _YearlyReportPageState extends State<YearlyReportPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                YearlyPieChart(pieData: pieData),
-                YearlyLegend(pieData: pieData),
+                YearlyPieChart(pieData: pieData, selectedUnit: null,),
+                YearlyLegend(pieData: pieData, selectedUnit: null,),
                 const SizedBox(width: 20),
               ],
             ),

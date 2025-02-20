@@ -32,8 +32,8 @@ class _CategoryGridPageState extends State<CategoryGridPage> {
           itemCount: categories.length + 1,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 4, // 한 행에 4개씩
-            crossAxisSpacing: 16, // 가로 간격
-            mainAxisSpacing: 16, // 세로 간격
+            crossAxisSpacing: 0, // 가로 간격
+            mainAxisSpacing: 10, // 세로 간격
             childAspectRatio: 0.8,
           ),
           itemBuilder: (context, index) {
@@ -48,12 +48,29 @@ class _CategoryGridPageState extends State<CategoryGridPage> {
                     ),
                   );
                 },
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: const Icon(Icons.add, size: 30),
+                child: Column(
+                  children: [
+                    // 카드 형태의 버튼
+                    Container(
+                      width: 55, // 고정된 크기 설정
+                      height: 67,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade200,
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all(color: Colors.grey.shade400),
+                      ),
+                      child: const Center(
+                        child: Icon(Icons.add, size: 32, color: Colors.grey),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    // 아래 텍스트
+                    Text(
+                      '추가',
+                      style:
+                          TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                    ),
+                  ],
                 ),
               );
             }
@@ -66,11 +83,10 @@ class _CategoryGridPageState extends State<CategoryGridPage> {
 
             return CategoryCard(
               title: title,
-              color: color, // HomeBody 처럼 String 그대로 전달
+              color: color,
               isSelected: isSelected,
               onTap: () {
                 setState(() {
-                  // 선택/해제
                   selectedTitle = isSelected ? '' : title;
                 });
                 Navigator.push(

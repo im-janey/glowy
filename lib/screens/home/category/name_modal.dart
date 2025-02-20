@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 
 Future<void> showCupertinoNameEditModal(
     BuildContext context, String currentName, Function(String) onNameChanged) {
-  TextEditingController controller = TextEditingController(text: currentName);
+  TextEditingController controller =
+      TextEditingController(text: currentName); // 기존 이름 유지
 
   return showCupertinoDialog(
     context: context,
@@ -41,7 +42,7 @@ Future<void> showCupertinoNameEditModal(
             child:
                 const Text("저장", style: TextStyle(fontWeight: FontWeight.bold)),
             onPressed: () {
-              onNameChanged(controller.text);
+              onNameChanged(controller.text); // 변경된 이름 반영
               Navigator.pop(context);
             },
           ),

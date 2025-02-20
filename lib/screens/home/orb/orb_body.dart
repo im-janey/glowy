@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../provider/activity_provider.dart'; // ActivityProvider 임포트
 import '../../../provider/category_provider.dart';
 import '../widgets.dart';
 import 'card_view.dart';
@@ -18,6 +19,18 @@ class _OrbBodyState extends State<OrbBody> {
   String selectedTitle = '';
   bool _showList = false;
   String _selectedFilter = '최신순';
+
+  @override
+  void initState() {
+    super.initState();
+    // 화면이 처음 빌드되면 ActivityProvider의 실시간 구독 시작 (또는 fetchActivities() 사용)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final activityProvider =
+          Provider.of<ActivityProvider>(context, listen: false);
+      activityProvider.listenToActivities();
+      // activityProvider.fetchActivities(); // 실시간이 아닌 1회성 조회를 원하면 이쪽
+    });
+  }
 
   Widget buildActivitiesRow(List<Map<String, dynamic>> categories) {
     return SingleChildScrollView(
@@ -93,7 +106,9 @@ class _OrbBodyState extends State<OrbBody> {
               ),
 
               Expanded(
-                // _selectedFilter 값을 자식에게 전달
+                // 실제로 CustomListView / CustomCardView 내부에서
+                // ActivityProvider의 데이터(activities)를 직접 구독하므로,
+                // 아래 activities 인자에 뭘 넣든 상관없습니다 (없애도 무방).
                 child: _showList
                     ? CustomCardView(
                         sortOrder: _selectedFilter,
@@ -101,7 +116,8 @@ class _OrbBodyState extends State<OrbBody> {
                       )
                     : CustomListView(
                         sortOrder: _selectedFilter,
-                        activities: const [],
+                        activities: const [], // 사용 안 하지만 필요하면 제거 가능
+                        selectedCategoryTitle: selectedTitle,
                       ),
               ),
             ],

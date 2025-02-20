@@ -107,7 +107,6 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
       child: Column(
         children: [
           MonthlyDropdown(onMonthChanged: updateSelectedMonth),
-
           const SizedBox(height: 16),
 
           /// 파이 차트 위젯
@@ -127,8 +126,8 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                MonthlyPieChart(pieData: pieData),
-                MonthlyLegend(pieData: pieData),
+                MonthlyPieChart(pieData: pieData, selectedUnit: '',),
+                MonthlyLegend(pieData: pieData, selectedUnit: '',),
                 const SizedBox(width: 20),
               ],
             ),

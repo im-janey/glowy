@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -26,16 +27,19 @@ class _SearchPageState extends State<SearchPage> {
       for (var doc in snapshot.docs) {
         final data = doc.data();
         final title = data['title']?.toString().toLowerCase() ?? '';
-        final description = data['description']?.toString().toLowerCase() ?? '';
         final tags = (data['tags'] as List<dynamic>?)
                 ?.map((tag) => tag.toString().toLowerCase())
                 .toList() ??
             [];
 
         if (title.contains(query.toLowerCase()) ||
-            description.contains(query.toLowerCase()) ||
             tags.any((tag) => tag.contains(query.toLowerCase()))) {
-          results.add(data);
+          results.add({
+            'title': data['title'] ?? '제목 없음',
+            'startedAt': data['startedAt'] != null
+                ? (data['startedAt'] as Timestamp).toDate()
+                : null,
+          });
         }
       }
 
@@ -43,6 +47,12 @@ class _SearchPageState extends State<SearchPage> {
     } catch (e) {
       print('검색 오류: $e');
     }
+  }
+
+  /// 날짜 형식: "yyyy-MM-dd" (시간 부분 제거)
+  String _formatDate(DateTime? date) {
+    if (date == null) return '날짜 없음';
+    return DateFormat('yyyy-MM-dd').format(date);
   }
 
   @override
@@ -96,7 +106,7 @@ class _SearchPageState extends State<SearchPage> {
                             ),
                             tileColor: Colors.white,
                             title: Text(item['title'] ?? '제목 없음'),
-                            subtitle: Text(item['description'] ?? '설명 없음'),
+                            subtitle: Text(_formatDate(item['startedAt'])),
                           ),
                         );
                       },

@@ -5,10 +5,15 @@ import '../../../provider/activity_provider.dart';
 import '../widgets.dart';
 
 class CustomListView extends StatefulWidget {
-  final String sortOrder; // "최신순" 또는 "과거순" 등
+  final String sortOrder;
+  final String selectedCategoryTitle;
 
-  const CustomListView({super.key, required this.sortOrder, required List<Map<String, dynamic>> activities});
-
+  const CustomListView({
+    super.key,
+    required this.sortOrder,
+    required this.selectedCategoryTitle,
+    required List activities,
+  });
   @override
   State<CustomListView> createState() => _CustomListViewState();
 }
@@ -34,7 +39,6 @@ class _CustomListViewState extends State<CustomListView> {
                   ),
                 ),
                 SizedBox(height: 60),
-                Text('기록이 없습니다.'),
               ],
             ),
           );
